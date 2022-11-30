@@ -64,7 +64,7 @@ def single_epoch_test_T5(model,
             ).detach().cpu()
 
 
-        pred = [sent.split()[-1].strip().replace('.','') for sent in tokenizer.batch_decode(outputs,skip_special_tokens=True)]
+       pred = [sent.split()[-1].strip().replace('적이다','').replace('.','') for sent in tokenizer.batch_decode(outputs,skip_special_tokens=True)]
         target = batch['label']
         acc_ +=  accuracy_score(target, pred)
         f1_ += f1_score(target, pred, average='macro')
