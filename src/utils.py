@@ -1,4 +1,14 @@
 from transformers import AdamW
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+def get_T5nTokenizer(MODEL_PATH):
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
+
+    num_added_toks = tokenizer.add_tokens(['[TGT]'])
+    model.resize_token_embeddings(len(tokenizer))
+
+    return model, tokenizer
 
 def get_optimizer_T5(model, 
                      lr = 3e-4,
