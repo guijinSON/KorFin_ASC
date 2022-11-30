@@ -59,8 +59,8 @@ def single_epoch_test_T5(model,
     
         output_array = outputs[:,tgt_idx].detach().cpu()
         tgt_array = tgt_input_ids[:,tgt_idx]
-        acc_score +=  accuracy_score(tgt_array, output_array)
-        f1_score += f1_score(tgt_array, output_array, average='macro')
+        acc_ +=  accuracy_score(tgt_array, output_array)
+        f1_ += f1_score(tgt_array, output_array, average='macro')
 
     acc_ /= len(loader)
     f1_ /= len(loader)
