@@ -4,7 +4,11 @@ import wandb
 from sklearn.metrics import accuracy_score, f1_score
 
 
-def single_epoch_train_T5(model,optimizer,train_loader,device):
+def single_epoch_train_T5(model,
+                          optimizer,
+                          train_loader,
+                          gradient_accumulation_steps=1,
+                          device='cuda:0'):
     model.train()
     loader = tqdm.tqdm(train_loader)
 
@@ -28,8 +32,10 @@ def single_epoch_train_T5(model,optimizer,train_loader,device):
 
         wandb.log({"Training Loss":loss.item()})
         loss.backward()
-        optimizer.step()
-        optimizer.zero_grad()
+        
+        if idx % gradient_accumulation_steps==0:
+            optimizer.step()
+            optimizer.zero_grad()
 
 @torch.no_grad()
 def single_epoch_test_T5(model,
