@@ -66,6 +66,6 @@ def single_epoch_test_T5(model,
     f1_ /= len(loader)
     
     wandb.log({
-        "Test Accuracy":acc_score,
-        "Test F1 Score":f1_score
+        "Test Accuracy":acc_,
+        "Test F1 Score":f1_
     })
