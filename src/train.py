@@ -39,10 +39,10 @@ def single_epoch_train_T5(model,
 
 @torch.no_grad()
 def single_epoch_test_T5(model,
-                           loader,
-                           tgt_idx=-3,
-                           device='cuda:0'
-                           ):
+                         loader,
+                         tokenizer,
+                         tgt_idx=-3,
+                         device='cuda:0'):
     
     model.eval()
     acc_ = 0.0
