@@ -55,12 +55,13 @@ def single_epoch_test_T5(model,
                 max_length=32,
                 num_beams = 3,
                 early_stopping=True,
-            )
-    
-        output_array = outputs[:,tgt_idx].detach().cpu()
-        tgt_array = tgt_input_ids[:,tgt_idx]
-        acc_ +=  accuracy_score(tgt_array, output_array)
-        f1_ += f1_score(tgt_array, output_array, average='macro')
+            ).detach().cpu()
+
+
+        pred = [sent.split()[-1].strip().replace('.','') for sent in tokenizer.batch_decode(outputs,skip_special_tokens=True)]
+        target = batch['label']
+        acc_ +=  accuracy_score(target, pred)
+        f1_ += f1_score(target, pred, average='macro')
 
     acc_ /= len(loader)
     f1_ /= len(loader)
