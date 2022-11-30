@@ -1,4 +1,4 @@
-from tqdm import tqdm
+import tqdm
 import torch
 import wandb
 
@@ -40,7 +40,7 @@ def single_epoch_test_T5(model,
     acc_score = 0.0
     f1_score = 0.0
 
-    for batch in tqdm(loader):
+    for batch in tqdm.tqdm(loader):
         src_input_ids, src_attention_mask, tgt_input_ids, tgt_attention_mask = (
                         batch['src_input_ids'].to(device),
                         batch['src_attention_mask'].to(device),
