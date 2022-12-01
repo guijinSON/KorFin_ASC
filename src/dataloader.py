@@ -48,7 +48,7 @@ class KorFin_ABSA_Dataset(Dataset):
                 src = src.replace(tgt,'[TGT]')
                 tgt = self.template.replace('[SENTIMENT]',sentiment.lower())
             else: 
-                
+                src = ' '.join([src, self.sep_token, tgt])
                 tgt = self.template.replace('[TGT]',tgt).replace('[SENTIMENT]',sentiment.lower())
 
         return {
