@@ -36,7 +36,7 @@ class KorFin_ABSA_Dataset(Dataset):
 
     def __getitem__(self, idx):
         src = self.src[idx] 
-        if self.date_type == 'absa':
+        if self.data_type == 'absa':
             tgt = self.tgt[idx]
         else:
             tgt = ''
