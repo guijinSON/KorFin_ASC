@@ -7,6 +7,7 @@ class KorFin_ABSA_Dataset(Dataset):
                  tgt, 
                  sentiment,
                  model_type = 'T5',
+                 data_type = 'absa',
                  sep_token = '</s>',
                  mask_aspect = True,
                  sentiment_classification = {"긍정":0, "부정":1,"중립":2},
@@ -16,7 +17,7 @@ class KorFin_ABSA_Dataset(Dataset):
         if model_type not in ['BERT','T5']:
             raise Exception(f"Undefined model_type error. {model_type} is not a valid model. Please choose from BERT or T5.")
 
-        if ('[SENTIMENT]' not in template) or ('[TGT]' not in template):
+        if '[SENTIMENT]' not in template:
             raise Exception(f"Template error. Please make sure the template include both [SENTIMENT] and [TGT].")
 
         self.src = src
@@ -25,6 +26,7 @@ class KorFin_ABSA_Dataset(Dataset):
 
         self.sep_token = sep_token
         self.model_type = model_type
+        self.data_type = data_type
         self.mask_aspect = mask_aspect
         self.template = template
         self.sentiment_classification = sentiment_classification
@@ -34,7 +36,10 @@ class KorFin_ABSA_Dataset(Dataset):
 
     def __getitem__(self, idx):
         src = self.src[idx] 
-        tgt = self.tgt[idx]
+        if self.date_type == 'absa':
+            tgt = self.tgt[idx]
+        else:
+            tgt = ''
         sentiment = self.sentiment[idx]
 
         if self.model_type == 'BERT':
