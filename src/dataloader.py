@@ -50,7 +50,8 @@ class KorFin_ABSA_Dataset(Dataset):
         
         elif self.model_type == 'T5':
             if self.mask_aspect:
-                src = src.replace(tgt,'[TGT]')
+                if self.data_type == 'absa':
+                    src = src.replace(tgt,'[TGT]')
                 tgt = self.template.replace('[SENTIMENT]',sentiment.lower())
             else: 
                 src = ' '.join([src, self.sep_token, tgt])
