@@ -1,10 +1,12 @@
 from transformers import AdamW
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForSequenceClassification
 
 def get_T5nTokenizer(MODEL_PATH):
+    try : model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
+    except : model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+        
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
-    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
-
+    
     num_added_toks = tokenizer.add_tokens(['[TGT]'])
     model.resize_token_embeddings(len(tokenizer))
 
