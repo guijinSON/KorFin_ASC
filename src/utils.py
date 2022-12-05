@@ -1,9 +1,9 @@
 from transformers import AdamW
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForSequenceClassification
 
-def get_T5nTokenizer(MODEL_PATH):
+def get_T5nTokenizer(MODEL_PATH, class_n=3):
     try : model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
-    except : model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
+    except : model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, num_labels=class_n)
         
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
     
