@@ -1,7 +1,8 @@
 from transformers import AdamW
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForSequenceClassification
+from huggingface_hub import notebook_login
 
-def get_BERTnTokenizer(MODEL_PATH, class_n=3):
+def get_ModelnTokenizer(MODEL_PATH, class_n=3):
     try : model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
     except : model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, num_labels=class_n)
         
@@ -28,3 +29,10 @@ def get_optimizer(model,
         ]
     optimizer = AdamW(optimizer_grouped_parameters, lr=lr, eps=1e-8)
     return optimizer
+
+def save_model(model,tokenizer,model_name):
+    notebook_login()
+    hf_path = "FINDA-FIT/" + model_name
+
+    model.push_to_hub(hf_path)
+    tokenizer.push_to_hub(hf_path)
