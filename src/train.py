@@ -37,48 +37,6 @@ def single_epoch_train_T5(model,
             optimizer.step()
             optimizer.zero_grad()
 
-@torch.no_grad()
-def single_epoch_test_T5(model,
-                         test_loader,
-                         tokenizer,
-                         tgt_idx=-3,
-                         device='cuda:0'):
-    
-    model.eval()
-    acc_ = 0.0
-    f1_ = 0.0
-    loader = tqdm.tqdm(test_loader)
-    
-    for batch in loader:
-        src_input_ids, src_attention_mask, tgt_input_ids, tgt_attention_mask = (
-                        batch['src_input_ids'].to(device),
-                        batch['src_attention_mask'].to(device),
-                        batch['tgt_input_ids'],
-                        batch['tgt_attention_mask']
-                    )
-
-        outputs = model.generate(
-                input_ids=src_input_ids, attention_mask=src_attention_mask,
-                max_length=32,
-                num_beams = 3,
-                early_stopping=True,
-            ).detach().cpu()
-
-
-        pred = [sent.split()[-1].strip().replace('적이다','').replace('.','') for sent in tokenizer.batch_decode(outputs,skip_special_tokens=True)]
-        target = batch['label']
-        acc_ +=  accuracy_score(target, pred)
-        f1_ += f1_score(target, pred, average='macro')
-
-    acc_ /= len(loader)
-    f1_ /= len(loader)
-    
-    wandb.log({
-        "Test Accuracy":acc_,
-        "Test F1 Score":f1_
-    })
-
-
 def single_epoch_train_BERT(model,
                             optimizer,
                             train_loader,
@@ -113,14 +71,19 @@ def single_epoch_train_BERT(model,
             
 @torch.no_grad()
 def single_epoch_test_BERT(model,
-                           test_loader,
+                           test_loader_mult,
+                           test_loader_sing,
                            device='cuda:0'):
     model.eval()
-    loader = tqdm.tqdm(test_loader)
-    acc_ = 0.0
-    f1_ = 0.0
+    mult_loader = tqdm.tqdm(test_loader_mult)
+    sing_loader = tqdm.tqdm(test_loader_sing)
 
-    for batch in loader:
+    mult_acc_ = 0.0
+    mult_f1_ = 0.0
+    sing_acc_ = 0.0
+    sing_f1_ = 0.0
+
+    for batch in mult_loader:
         src_input_ids, src_attention_mask, target = (
                         batch['src_input_ids'].to(device),
                         batch['src_attention_mask'].to(device),
@@ -133,13 +96,102 @@ def single_epoch_test_BERT(model,
         )
 
         pred = torch.argmax(outputs.logits,dim=1).detach().cpu()
-        acc_ +=  accuracy_score(target, pred)
-        f1_ += f1_score(target, pred, average='macro')
+        mult_acc_ +=  accuracy_score(target, pred)
+        mult_f1_ += f1_score(target, pred, average='macro')
 
-    acc_ /= len(loader)
-    f1_ /= len(loader)
+    for batch in sing_loader:
+        src_input_ids, src_attention_mask, target = (
+                        batch['src_input_ids'].to(device),
+                        batch['src_attention_mask'].to(device),
+                        batch['label']
+                        )
+        
+        outputs = model(
+            input_ids = src_input_ids,
+            attention_mask = src_attention_mask
+        )
+
+        pred = torch.argmax(outputs.logits,dim=1).detach().cpu()
+        sing_acc_ +=  accuracy_score(target, pred)
+        sing_f1_ += f1_score(target, pred, average='macro')
+
+    mult_acc_ /= len(mult_loader)
+    mult_f1_ /= len(mult_loader)
+    sing_acc_ /= len(sing_loader)
+    sing_f1_ /= len(sing_loader)
     
     wandb.log({
-        "Test Accuracy":acc_,
-        "Test F1 Score":f1_
-    })
+        "Test Accuracy(MULTIPLE_ENT)":mult_acc_,
+        "Test F1 Score(MULTIPLE_ENT)":mult_f1_,
+        "Test Accuracy(SINGLE_ENT)":sing_acc_,
+        "Test F1 Score(SINGLE_ENT)":sing_f1_})
+    
+@torch.no_grad()
+def single_epoch_test_T5(model,
+                         test_loader_mult,
+                         test_loader_sing,
+                         tokenizer,
+                         tgt_idx=-3,
+                         device='cuda:0'):
+    
+    model.eval()
+    mult_acc_ = 0.0
+    mult_f1_ = 0.0
+    sing_acc_ = 0.0
+    sing_f1_ = 0.0
+    
+    mult_loader = tqdm.tqdm(test_loader_mult)
+    sing_loader = tqdm.tqdm(test_loader_sing)
+    
+    for batch in mult_loader:
+        src_input_ids, src_attention_mask, tgt_input_ids, tgt_attention_mask = (
+                        batch['src_input_ids'].to(device),
+                        batch['src_attention_mask'].to(device),
+                        batch['tgt_input_ids'],
+                        batch['tgt_attention_mask']
+                    )
+
+        outputs = model.generate(
+                input_ids=src_input_ids, attention_mask=src_attention_mask,
+                max_length=32,
+                num_beams = 3,
+                early_stopping=True,
+            ).detach().cpu()
+
+
+        pred = [sent.split()[-1].strip().replace('적이다','').replace('.','') for sent in tokenizer.batch_decode(outputs,skip_special_tokens=True)]
+        target = batch['label']
+        mult_acc_ +=  accuracy_score(target, pred)
+        mult_f1_ += f1_score(target, pred, average='macro')
+
+    for batch in sing_loader:
+        src_input_ids, src_attention_mask, tgt_input_ids, tgt_attention_mask = (
+                        batch['src_input_ids'].to(device),
+                        batch['src_attention_mask'].to(device),
+                        batch['tgt_input_ids'],
+                        batch['tgt_attention_mask']
+                    )
+
+        outputs = model.generate(
+                input_ids=src_input_ids, attention_mask=src_attention_mask,
+                max_length=32,
+                num_beams = 3,
+                early_stopping=True,
+            ).detach().cpu()
+
+
+        pred = [sent.split()[-1].strip().replace('적이다','').replace('.','') for sent in tokenizer.batch_decode(outputs,skip_special_tokens=True)]
+        target = batch['label']
+        sing_acc_ +=  accuracy_score(target, pred)
+        sing_f1_ += f1_score(target, pred, average='macro')
+
+    mult_acc_ /= len(mult_loader)
+    mult_f1_ /= len(mult_loader)
+    sing_acc_ /= len(sing_loader)
+    sing_f1_ /= len(sing_loader)
+    
+    wandb.log({
+        "Test Accuracy(MULTIPLE_ENT)":mult_acc_,
+        "Test F1 Score(MULTIPLE_ENT)":mult_f1_,
+        "Test Accuracy(SINGLE_ENT)":sing_acc_,
+        "Test F1 Score(SINGLE_ENT)":sing_f1_}) 
