@@ -60,7 +60,7 @@ class KorFin_ABSA_Dataset(Dataset):
         return {
             'SRC':src,
             'TGT':tgt,
-            'SENTIMENT': (sentiment,self.sentiment_classification[sentiment.lower()])
+            'SENTIMENT': (sentiment.lower(),self.sentiment_classification[sentiment])
         }
 
 
