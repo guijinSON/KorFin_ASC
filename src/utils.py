@@ -1,7 +1,7 @@
 from transformers import AdamW
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForSequenceClassification
 
-def get_T5nTokenizer(MODEL_PATH, class_n=3):
+def get_BERTnTokenizer(MODEL_PATH, class_n=3):
     try : model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
     except : model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH, num_labels=class_n)
         
@@ -12,7 +12,7 @@ def get_T5nTokenizer(MODEL_PATH, class_n=3):
 
     return model, tokenizer
 
-def get_optimizer_T5(model, 
+def get_optimizer(model, 
                      lr = 3e-4,
                      no_decay=['bias','layerNorm.weight']):
     
