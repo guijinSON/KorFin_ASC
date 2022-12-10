@@ -109,7 +109,7 @@ def single_epoch_train_BERT(model,
         
         if idx % gradient_accumulation_steps==0:
             optimizer.step()
-            optimizer.zero_grad
+            optimizer.zero_grad()
             
 @torch.no_grad()
 def single_epoch_test_BERT(model,
