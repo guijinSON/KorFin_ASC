@@ -45,7 +45,9 @@ class KorFin_ABSA_Dataset(Dataset):
         if self.data_type == 'absa':
             tgt = self.tgt[idx]
             if self.shuffle_entity:
-                tgt = random.choice(self.sample_entity)
+                Ntgt = random.choice(self.sample_entity)
+                src  = src.replace(tgt,Ntgt)
+                tgt = Ntgt
         else:
             tgt = ''
         sentiment = self.sentiment[idx]
