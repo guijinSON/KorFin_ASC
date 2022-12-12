@@ -118,11 +118,11 @@ class Seq2SeqBatchGenerator:
                                                     return_tensors='pt')
 
 
-def get_dataloader(dataset, batch_generator, batch_size=4, shuffle=True):
+def get_dataloader(dataset, batch_generator, batch_size=4, drop_last = True, shuffle=True):
     data_loader = DataLoader(dataset, 
                               batch_size=batch_size, 
                               shuffle=shuffle, 
                               collate_fn=batch_generator,
-                              drop_last=True,
+                              drop_last=drop_last,
                               num_workers=4)
     return data_loader
