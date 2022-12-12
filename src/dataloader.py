@@ -1,4 +1,5 @@
 import torch 
+import random
 from torch.utils.data import Dataset, DataLoader
 
 class KorFin_ABSA_Dataset(Dataset):
@@ -11,7 +12,9 @@ class KorFin_ABSA_Dataset(Dataset):
                  sep_token = '</s>',
                  mask_aspect = True,
                  sentiment_classification = {"긍정":0, "부정":1,"중립":2},
-                 template   =  'The sentiment for [TGT] in the given sentence is [SENTIMENT].'
+                 template   =  'The sentiment for [TGT] in the given sentence is [SENTIMENT].',
+                 shuffle_entity = False,
+                 sample_entity = ['금감원','대한통운','LG카드','금투협','에스에프에이','KB증권','금감원장','신한금투','대구은행','우주일렉트로','이니스프리','한화투자','엔비디아'] 
                  ):
         
         if model_type not in ['BERT','T5']:
@@ -30,6 +33,9 @@ class KorFin_ABSA_Dataset(Dataset):
         self.mask_aspect = mask_aspect
         self.template = template
         self.sentiment_classification = sentiment_classification
+        
+        self.shuffle_entity = shuffle_entity
+        self.sample_entity = sample_entity
 
     def __len__(self):
         return len(self.src)
@@ -38,6 +44,8 @@ class KorFin_ABSA_Dataset(Dataset):
         src = self.src[idx] 
         if self.data_type == 'absa':
             tgt = self.tgt[idx]
+            if self.shuffle_entity:
+                tgt = random.choice(self.sample_entity)
         else:
             tgt = ''
         sentiment = self.sentiment[idx]
